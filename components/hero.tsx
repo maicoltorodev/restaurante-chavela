@@ -4,13 +4,24 @@ export function Hero() {
   return (
     <section id="inicio" className="relative min-h-[100vh] min-h-[100svh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
-        <Image
-          src="/images/hero-tacos.jpg"
-          alt="Tacos artesanales de Chavela"
-          fill
-          className="object-cover scale-110 animate-slow-zoom"
-          priority
-        />
+        <div className="hidden sm:block absolute inset-0">
+          <Image
+            src="/images/hero-tacos.webp"
+            alt="Tacos artesanales de Chavela"
+            fill
+            className="object-cover scale-110 animate-slow-zoom"
+            priority
+          />
+        </div>
+        <div className="block sm:hidden absolute inset-0">
+          <Image
+            src="/images/hero-taco-mobile.webp"
+            alt="Tacos artesanales de Chavela"
+            fill
+            className="object-cover scale-110 animate-slow-zoom"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 bg-background/70" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
