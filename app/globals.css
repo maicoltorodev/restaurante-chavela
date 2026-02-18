@@ -170,7 +170,7 @@ html {
   }
 }
 
-/* Utilidades Mobile */
+/* Utilidades Mobile Premium */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -183,7 +183,7 @@ html {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
 
   to {
@@ -193,5 +193,17 @@ html {
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Background Patterns */
+.bg-grid-primary {
+  background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.05;
 }

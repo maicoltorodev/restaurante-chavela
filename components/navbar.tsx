@@ -59,51 +59,59 @@ export function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-background/98 backdrop-blur-xl z-[60] transition-all duration-500 lg:hidden ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
+        className={`fixed inset-0 bg-background/98 backdrop-blur-xl z-[60] transition-all duration-700 lg:hidden ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
           }`}
       >
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-grid-primary pointer-events-none opacity-20" />
+
         <div className="flex flex-col items-center justify-center h-full gap-8 px-6 relative">
           <button
             onClick={() => setIsOpen(false)}
-            className="absolute top-6 right-6 p-2 text-primary hover:scale-110 transition-transform"
+            className="absolute top-6 right-6 p-3 text-primary hover:scale-110 transition-transform bg-primary/5 rounded-full"
           >
-            <X size={36} />
+            <X size={32} />
           </button>
 
           <Image
             src="/images/logo.png"
             alt="Logo"
-            width={100}
-            height={100}
-            className="mb-4 animate-mystic-float drop-shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+            width={120}
+            height={120}
+            className={`mb-4 animate-mystic-float drop-shadow-[0_0_30px_rgba(244,63,94,0.4)] transition-all duration-1000 ${isOpen ? "scale-100 rotate-0" : "scale-50 rotate-12"}`}
           />
 
-          {navLinks.map((link, i) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className={`font-serif text-4xl text-foreground hover:text-primary transition-all duration-500 transform ${isOpen ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
-                }`}
-              style={{ transitionDelay: `${i * 100 + 200}ms` }}
-            >
-              {link.label}
-            </a>
-          ))}
+          <div className="flex flex-col items-center gap-6 sm:gap-8">
+            {navLinks.map((link, i) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={`font-serif text-4xl sm:text-5xl text-foreground hover:text-primary transition-all duration-700 transform ${isOpen ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
+                  }`}
+                style={{ transitionDelay: `${i * 100 + 300}ms` }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
 
           <a
             href="https://wa.me/573000000000"
             target="_blank"
-            className={`mt-10 bg-primary text-primary-foreground px-12 py-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-700 shadow-2xl shadow-primary/20 ${isOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"
+            className={`mt-10 bg-primary text-primary-foreground px-12 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] transition-all duration-1000 shadow-2xl shadow-primary/30 flex items-center gap-3 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
               }`}
-            style={{ transitionDelay: "600ms" }}
+            style={{ transitionDelay: "700ms" }}
           >
-            Reservar Ahora
+            Reservar Mesa
           </a>
 
-          <p className="absolute bottom-10 text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-            Chavela Usaquén · Bogotá
-          </p>
+          <div className={`absolute bottom-10 flex flex-col items-center gap-2 transition-all duration-1000 delay-1000 ${isOpen ? "opacity-100" : "opacity-0"}`}>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-primary font-bold">
+              Usaquén · Bogotá
+            </p>
+            <div className="w-12 h-px bg-primary/30" />
+          </div>
         </div>
       </div>
     </nav>
