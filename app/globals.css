@@ -136,10 +136,24 @@ html {
   animation: mystic-float 6s ease-in-out infinite;
 }
 
-/* Scrollbar Personalizado */
+/* Estilos de Scroll Global (Compatibilidad extendida) */
+html,
+body {
+  scrollbar-color: var(--primary) var(--background);
+  scrollbar-width: thin;
+}
+
+/* Scrollbar Personalizado (Webkit) */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
   height: 8px;
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
 }
 
 ::-webkit-scrollbar-track {
