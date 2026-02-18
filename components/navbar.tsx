@@ -50,34 +50,32 @@ export function Navbar() {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-foreground p-2 hover:text-primary transition-colors"
-          aria-label={isOpen ? "Cerrar menu" : "Abrir menu"}
+          className="md:hidden relative z-[70] w-12 h-12 flex items-center justify-center bg-primary/10 rounded-xl transition-all duration-300 active:scale-95 group"
+          aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
         >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+          <div className="flex flex-col gap-1.5 w-6 items-end">
+            <span className={`h-0.5 bg-primary rounded-full transition-all duration-300 ${isOpen ? "w-6 rotate-45 translate-y-2" : "w-6"}`} />
+            <span className={`h-0.5 bg-primary rounded-full transition-all duration-300 ${isOpen ? "opacity-0" : "w-4"}`} />
+            <span className={`h-0.5 bg-primary rounded-full transition-all duration-300 ${isOpen ? "w-6 -rotate-45 -translate-y-2" : "w-5"}`} />
+          </div>
         </button>
       </div>
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-background/98 backdrop-blur-xl z-[60] transition-all duration-700 lg:hidden ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full"
+        className={`fixed inset-0 bg-background/98 backdrop-blur-2xl z-[60] transition-all duration-700 lg:hidden flex flex-col items-center justify-center ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
+        style={{ height: '100dvh' }}
       >
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-grid-primary pointer-events-none opacity-20" />
 
-        <div className="flex flex-col items-center justify-center h-full gap-8 px-6 relative">
-          <button
-            onClick={() => setIsOpen(false)}
-            className="absolute top-6 right-6 p-3 text-primary hover:scale-110 transition-transform bg-primary/5 rounded-full"
-          >
-            <X size={32} />
-          </button>
-
+        <div className="flex flex-col items-center justify-center w-full gap-8 px-6 relative">
           <Image
             src="/images/logo.png"
             alt="Logo"
-            width={120}
-            height={120}
+            width={100}
+            height={100}
             className={`mb-4 animate-mystic-float drop-shadow-[0_0_30px_rgba(244,63,94,0.4)] transition-all duration-1000 ${isOpen ? "scale-100 rotate-0" : "scale-50 rotate-12"}`}
           />
 
@@ -89,7 +87,7 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
                 className={`font-serif text-4xl sm:text-5xl text-foreground hover:text-primary transition-all duration-700 transform ${isOpen ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
                   }`}
-                style={{ transitionDelay: `${i * 100 + 300}ms` }}
+                style={{ transitionDelay: `${isOpen ? i * 100 + 300 : 0}ms` }}
               >
                 {link.label}
               </a>
@@ -101,13 +99,13 @@ export function Navbar() {
             target="_blank"
             className={`mt-10 bg-primary text-primary-foreground px-12 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] transition-all duration-1000 shadow-2xl shadow-primary/30 flex items-center gap-3 ${isOpen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
               }`}
-            style={{ transitionDelay: "700ms" }}
+            style={{ transitionDelay: `${isOpen ? 700 : 0}ms` }}
           >
             Reservar Mesa
           </a>
 
-          <div className={`absolute bottom-10 flex flex-col items-center gap-2 transition-all duration-1000 delay-1000 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-            <p className="text-[10px] uppercase tracking-[0.5em] text-primary font-bold">
+          <div className={`mt-12 flex flex-col items-center gap-2 transition-all duration-1000 ${isOpen ? "opacity-100" : "opacity-0"} delay-700`}>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-primary font-bold text-center">
               Usaquén · Bogotá
             </p>
             <div className="w-12 h-px bg-primary/30" />

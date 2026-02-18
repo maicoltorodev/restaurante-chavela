@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Flame, Sparkles, ChefHat } from "lucide-react"
+import { Flame, Sparkles, ChefHat, ChevronLeft, ChevronRight } from "lucide-react"
 
 const categories = ["Botanas", "Tacos", "Para Compartir", "Quesadillas", "Fuertes", "Cócteles", "Bebidas"] as const
 
@@ -254,22 +254,69 @@ export function MenuSection() {
         </div>
 
         {/* Categorías Navigation */}
-        <div className="flex justify-start md:justify-center gap-3 mb-16 overflow-x-auto pb-4 no-scrollbar">
-          {categories.map((cat) => (
+        <div className="relative mb-16">
+          {/* Mobile Navigation (Arrows) */}
+          <div className="flex md:hidden items-center justify-between gap-4 px-4 py-2 bg-card/30 backdrop-blur-sm rounded-2xl border border-border/50 shadow-lg">
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-8 py-4 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-500 rounded-full border whitespace-nowrap shadow-sm group relative overflow-hidden ${activeCategory === cat
-                ? "bg-primary text-primary-foreground border-primary shadow-primary/20"
-                : "bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary"
-                }`}
+              onClick={() => {
+                const currentIndex = categories.indexOf(activeCategory)
+                const prevIndex = (currentIndex - 1 + categories.length) % categories.length
+                setActiveCategory(categories[prevIndex])
+              }}
+              className="p-3 text-primary hover:bg-primary/10 rounded-xl transition-colors active:scale-90"
             >
-              <span className="relative z-10">{cat}</span>
-              {activeCategory === cat && (
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-20 group-hover:opacity-40 transition-opacity" />
-              )}
+              <ChevronLeft size={24} />
             </button>
-          ))}
+
+            <div className="flex-1 text-center overflow-hidden">
+              <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold mb-1 animate-pulse">
+                Explorar Carta
+              </p>
+              <h3 key={activeCategory} className="font-serif text-2xl text-foreground whitespace-nowrap overflow-hidden text-ellipsis animate-fade-in">
+                {activeCategory}
+              </h3>
+            </div>
+
+            <button
+              onClick={() => {
+                const currentIndex = categories.indexOf(activeCategory)
+                const nextIndex = (currentIndex + 1) % categories.length
+                setActiveCategory(categories[nextIndex])
+              }}
+              className="p-3 text-primary hover:bg-primary/10 rounded-xl transition-colors active:scale-90"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+
+          {/* Desktop Navigation (Pills) */}
+          <div className="hidden md:flex justify-center gap-3 overflow-x-auto pb-4 no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-8 py-4 text-xs uppercase tracking-[0.2em] font-bold transition-all duration-500 rounded-full border whitespace-nowrap shadow-sm group relative overflow-hidden ${activeCategory === cat
+                  ? "bg-primary text-primary-foreground border-primary shadow-primary/20"
+                  : "bg-card/50 border-border/50 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                  }`}
+              >
+                <span className="relative z-10">{cat}</span>
+                {activeCategory === cat && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-20 group-hover:opacity-40 transition-opacity" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Indicators dots for mobile */}
+          <div className="flex md:hidden justify-center gap-1.5 mt-6">
+            {categories.map((cat) => (
+              <div
+                key={cat}
+                className={`h-1 rounded-full transition-all duration-500 ${activeCategory === cat ? "w-6 bg-primary" : "w-1.5 bg-border"}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Menu Items Grid */}

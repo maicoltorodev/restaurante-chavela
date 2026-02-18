@@ -78,8 +78,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-60">
-        <p className="text-[10px] uppercase tracking-[0.5em] font-bold text-foreground inline-block vertical-text [writing-mode:vertical-lr]">Scroll</p>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-60">
         <div className="w-px h-16 bg-gradient-to-b from-primary to-transparent" />
       </div>
     </section>
