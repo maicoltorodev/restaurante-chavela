@@ -1,6 +1,31 @@
+"use client"
+
 import Image from "next/image"
+import { useState, useRef } from "react"
+import { useRouter } from "next/navigation"
 
 export function Hero() {
+  const [clickCount, setClickCount] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const router = useRouter()
+
+  const handleLogoClick = () => {
+    setClickCount((prev) => {
+      const newCount = prev + 1
+
+      if (newCount === 7) {
+        router.push("/login")
+        return 0
+      }
+
+      // Resetear si no hay clicks pronto
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setClickCount(0), 1000)
+
+      return newCount
+    })
+  }
+
   return (
     <section id="inicio" className="relative min-h-[100vh] min-h-[100svh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
@@ -52,12 +77,15 @@ export function Hero() {
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto pt-16 sm:pt-24">
         <div className="mb-6 sm:mb-8 flex justify-center animate-logo-float">
-          <div className="relative w-[180px] h-[180px] sm:w-[280px] sm:h-[280px]">
+          <div
+            className="relative w-[180px] h-[180px] sm:w-[280px] sm:h-[280px] select-none"
+            onClick={handleLogoClick}
+          >
             <Image
               src="/images/logo.png"
               alt="Chavela logo"
               fill
-              className="drop-shadow-2xl hover:brightness-125 transition-all duration-500 cursor-pointer object-contain"
+              className="drop-shadow-2xl hover:brightness-125 transition-all duration-500 cursor-pointer object-contain active:scale-95"
               priority
             />
           </div>
