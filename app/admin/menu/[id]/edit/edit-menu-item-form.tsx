@@ -28,10 +28,8 @@ export default function EditMenuItemForm({ menuItem, categories }: EditMenuItemF
         description: menuItem.description || '',
         price: menuItem.price.toString(),
         category_id: menuItem.category_id,
-        ingredients: menuItem.ingredients?.join(', ') || '',
         image_url: menuItem.image_url || '',
         tag: menuItem.tag || '',
-        allergens: menuItem.allergens || [],
         is_active: menuItem.is_active
     })
 
@@ -43,7 +41,6 @@ export default function EditMenuItemForm({ menuItem, categories }: EditMenuItemF
             const menuItemData = {
                 ...formData,
                 price: parseFloat(formData.price),
-                ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(Boolean),
                 tag: formData.tag || null
             }
 
@@ -67,7 +64,6 @@ export default function EditMenuItemForm({ menuItem, categories }: EditMenuItemF
         }
     }
 
-    const allergenOptions = ['gluten', 'lacteos', 'huevo', 'mariscos', 'frutos secos']
 
     return (
         <form onSubmit={onSubmit} className="space-y-8 max-w-5xl mx-auto pb-20">
@@ -187,61 +183,18 @@ export default function EditMenuItemForm({ menuItem, categories }: EditMenuItemF
                     </CardContent>
                 </Card>
 
-                <Card className="bg-[#14100f] border-white/5 shadow-2xl rounded-2xl overflow-hidden text-white">
-                    <CardHeader className="p-8 border-b border-white/5 bg-black/20">
-                        <CardTitle className="text-xs uppercase tracking-[0.3em] font-bold text-muted-foreground">Composición e Ingredientes</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-8">
-                        <div className="space-y-3">
-                            <Label htmlFor="ingredients" className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Ingredientes Clave (separados por comas)</Label>
-                            <Textarea
-                                id="ingredients"
-                                value={formData.ingredients}
-                                onChange={(e) => setFormData(prev => ({ ...prev, ingredients: e.target.value }))}
-                                rows={2}
-                                className="bg-black/20 border-white/5 focus-visible:ring-primary/40 text-white resize-none py-4"
-                            />
-                        </div>
-
-                        <div className="space-y-4">
-                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Presencia de Alérgenos</Label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {allergenOptions.map((allergen) => (
-                                    <div key={allergen} className="group flex items-center space-x-3 p-3 bg-black/20 border border-white/5 rounded-xl hover:bg-primary/5 hover:border-primary/20 transition-all">
-                                        <Checkbox
-                                            id={allergen}
-                                            checked={formData.allergens.includes(allergen)}
-                                            onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                    setFormData(prev => ({ ...prev, allergens: [...prev.allergens, allergen] }))
-                                                } else {
-                                                    setFormData(prev => ({ ...prev, allergens: prev.allergens.filter(a => a !== allergen) }))
-                                                }
-                                            }}
-                                            className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                                        />
-                                        <Label htmlFor={allergen} className="text-xs uppercase tracking-widest font-bold cursor-pointer transition-colors group-hover:text-primary">
-                                            {allergen}
-                                        </Label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-3 p-4 bg-primary/5 border border-primary/20 rounded-2xl">
-                            <Checkbox
-                                id="is_active"
-                                checked={formData.is_active}
-                                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: !!checked }))}
-                                className="border-primary/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                            />
-                            <div className="flex flex-col">
-                                <Label htmlFor="is_active" className="text-sm font-bold text-white cursor-pointer">Disponibilidad Inmediata</Label>
-                                <span className="text-[10px] text-primary/60 font-medium font-sans">Si se desactiva, el plato dejará de aparecer en la carta web.</span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="flex items-center space-x-3 p-4 bg-primary/5 border border-primary/20 rounded-2xl">
+                    <Checkbox
+                        id="is_active"
+                        checked={formData.is_active}
+                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: !!checked }))}
+                        className="border-primary/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <div className="flex flex-col">
+                        <Label htmlFor="is_active" className="text-sm font-bold text-white cursor-pointer">Disponibilidad Inmediata</Label>
+                        <span className="text-[10px] text-primary/60 font-medium font-sans">Si se desactiva, el plato dejará de aparecer en la carta web.</span>
+                    </div>
+                </div>
             </div>
         </form>
     )

@@ -38,6 +38,27 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
         })
     }
 
+    const deleteOldImage = async (url: string) => {
+        if (!url) return
+        try {
+            await fetch('/api/upload', {
+                method: 'DELETE',
+                body: JSON.stringify({ url }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+        } catch (error) {
+            console.error('Error deleting old image:', error)
+        }
+    }
+
+    const handleRemove = async () => {
+        if (value) {
+            await deleteOldImage(value)
+            toast.info('Imagen anterior eliminada')
+        }
+        onRemove()
+    }
+
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
             const file = e.target.files?.[0]
@@ -67,23 +88,28 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
             const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.webp`
             const filePath = `menu/${fileName}`
 
-            // 5. Subir a Supabase
-            const { error } = await supabase.storage
-                .from('images')
-                .upload(filePath, webpBlob, {
-                    contentType: 'image/webp',
-                    cacheControl: '3600',
-                    upsert: false
-                })
+            // 5. Subir a través de API Route (Seguro, Server-Side Upload)
+            const formData = new FormData()
+            formData.append('file', webpBlob)
+            formData.append('path', filePath)
 
-            if (error) throw error
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
 
-            // 6. Obtener URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('images')
-                .getPublicUrl(filePath)
+            const result = await response.json()
 
-            onChange(publicUrl)
+            if (!response.ok) {
+                throw new Error(result.error || 'Error en el servidor')
+            }
+
+            // SI YA HABÍA UNA IMAGEN, BORRAR LA ANTERIOR PARA AHORRAR ESPACIO
+            if (value) {
+                await deleteOldImage(value)
+            }
+
+            onChange(result.publicUrl)
             toast.success('Imagen procesada y subida')
         } catch (error: any) {
             console.error('Error uploading:', error)
@@ -104,7 +130,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
                                 type="button"
                                 variant="destructive"
                                 size="icon"
-                                onClick={onRemove}
+                                onClick={handleRemove}
                                 className="h-8 w-8"
                             >
                                 <X className="h-4 w-4" />

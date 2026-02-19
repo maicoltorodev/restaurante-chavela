@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getCategories, createCategory } from '@/lib/supabase/queries'
 import { categorySchema } from '@/lib/cms/validations'
 
+import { revalidateTag } from 'next/cache'
+
 export const runtime = 'edge'
 
 export async function GET() {
@@ -30,7 +32,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const category = await createCategory(validation.data)
+    const categoryData = {
+      ...validation.data,
+      description: validation.data.description || null
+    }
+
+    const category = await createCategory(categoryData)
+
+    // Invalidate cache
+    revalidateTag('categories')
+    revalidateTag('menu-items')
+
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     console.error('Error creating category:', error)

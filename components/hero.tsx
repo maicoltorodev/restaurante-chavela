@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
 export function Hero() {
@@ -13,18 +13,24 @@ export function Hero() {
     setClickCount((prev) => {
       const newCount = prev + 1
 
-      if (newCount === 7) {
-        router.push("/login")
-        return 0
-      }
-
-      // Resetear si no hay clicks pronto
-      if (timerRef.current) clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(() => setClickCount(0), 1000)
-
+      // Resetear si no hay clicks pronto (Side effect moved out of updater conceptually, 
+      // but simpler to keep timeout logic here mostly or move to effect. 
+      // safer pattern: simple increment here, effect handles check)
       return newCount
     })
+
+    // Reset timer on every click
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => setClickCount(0), 1000)
   }
+
+  // Side effect for navigation
+  useEffect(() => {
+    if (clickCount === 7) {
+      router.push("/login")
+      setClickCount(0)
+    }
+  }, [clickCount, router])
 
   return (
     <section id="inicio" className="relative min-h-[100vh] min-h-[100svh] flex items-center justify-center overflow-hidden">

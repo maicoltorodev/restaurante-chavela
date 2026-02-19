@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getMenuItems, createMenuItem } from '@/lib/supabase/queries'
 import { menuItemSchema } from '@/lib/cms/validations'
+import { revalidateTag } from 'next/cache'
 
 export const runtime = 'edge'
 
@@ -30,7 +31,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const menuItem = await createMenuItem(validation.data)
+    const menuItemData = {
+      ...validation.data,
+      description: validation.data.description || null,
+      image_url: validation.data.image_url || null,
+      tag: validation.data.tag || null,
+      ingredients: validation.data.ingredients || [],
+      allergens: validation.data.allergens || []
+    }
+
+    const menuItem = await createMenuItem(menuItemData)
+
+    // Invalidate cache
+    revalidateTag('menu-items')
+
     return NextResponse.json(menuItem, { status: 201 })
   } catch (error) {
     console.error('Error creating menu item:', error)

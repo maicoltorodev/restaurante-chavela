@@ -15,7 +15,7 @@ export const getCategories = unstable_cache(
     return data || []
   },
   ['categories'],
-  { tags: ['categories'], revalidate: 3600 }
+  { tags: ['categories'] }
 )
 
 export const getMenuItems = unstable_cache(
@@ -34,7 +34,7 @@ export const getMenuItems = unstable_cache(
     return data || []
   },
   ['menu-items'],
-  { tags: ['menu-items'], revalidate: 3600 }
+  { tags: ['menu-items'] }
 )
 
 export async function getMenuItemsByCategory(categoryId: string): Promise<MenuItem[]> {
@@ -150,7 +150,7 @@ export const getRestaurantInfo = unstable_cache(
     return data || []
   },
   ['restaurant-info'],
-  { tags: ['restaurant-info'], revalidate: 3600 }
+  { tags: ['restaurant-info'] }
 )
 
 export async function updateRestaurantInfo(key: string, value: string | null): Promise<void> {
@@ -190,7 +190,7 @@ export const getTestimonials = unstable_cache(
     return data || []
   },
   ['testimonials'],
-  { tags: ['testimonials'], revalidate: 3600 }
+  { tags: ['testimonials'] }
 )
 
 export async function updateTestimonial(id: string, testimonial: Partial<Testimonial>): Promise<Testimonial> {

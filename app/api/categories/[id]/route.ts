@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateCategory, deleteCategory, getCategoryById } from '@/lib/supabase/queries'
 import { categorySchema } from '@/lib/cms/validations'
+import { revalidateTag } from 'next/cache'
 
 export const runtime = 'edge'
 
@@ -37,6 +38,11 @@ export async function PUT(
         }
 
         const category = await updateCategory(id, validation.data)
+
+        // Invalidate cache
+        revalidateTag('categories')
+        revalidateTag('menu-items')
+
         return NextResponse.json(category)
     } catch (error) {
         console.error('Error updating category:', error)
@@ -54,6 +60,11 @@ export async function DELETE(
     try {
         const { id } = await params
         await deleteCategory(id)
+
+        // Invalidate cache
+        revalidateTag('categories')
+        revalidateTag('menu-items')
+
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error('Error deleting category:', error)

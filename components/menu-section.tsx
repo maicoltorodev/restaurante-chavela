@@ -111,58 +111,71 @@ export function MenuSection({ initialCategories, initialMenuItems }: MenuSection
         </div>
 
         {/* Menu Items Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {filteredItems.map((item, i) => (
-            <div
-              key={item.id}
-              className="group relative flex gap-6 p-1 bg-background/50 hover:bg-card/30 rounded-3xl transition-all duration-500 items-center animate-fade-in"
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              {item.image_url ? (
-                <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 overflow-hidden rounded-2xl shadow-xl shadow-background/20 group-hover:shadow-primary/10 transition-all duration-700">
-                  <Image
-                    src={item.image_url}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-              ) : (
-                <div className="w-16 sm:w-20 flex-shrink-0 flex items-center justify-center">
-                  <Flame size={32} className="text-primary opacity-20 group-hover:opacity-60 transition-opacity" />
-                </div>
-              )}
-
-              <div className="flex-1 pr-4 py-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className="font-serif text-xl sm:text-2xl text-foreground group-hover:text-primary transition-colors duration-300">
-                      {item.name}
-                    </h3>
-                    {item.tag && (
-                      <span className="text-[9px] uppercase tracking-[0.2em] font-bold bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full whitespace-nowrap">
-                        {item.tag}
-                      </span>
-                    )}
+        {filteredItems.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 min-h-[50vh]">
+            {filteredItems.map((item, i) => (
+              <div
+                key={item.id}
+                className="group relative flex gap-6 p-4 sm:p-6 bg-background/50 hover:bg-card/30 rounded-3xl transition-all duration-500 items-start sm:items-center animate-fade-in border border-transparent hover:border-primary/10"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                {/* Image Container */}
+                {item.image_url ? (
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg shadow-black/20 group-hover:shadow-primary/20 transition-all duration-500">
+                    <Image
+                      src={item.image_url}
+                      alt={item.name}
+                      fill
+                      sizes="(max-width: 640px) 96px, 128px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
                   </div>
-                  <div className="font-serif text-xl text-primary whitespace-nowrap group-hover:scale-110 transition-transform origin-right">
-                    ${formatPrice(item.price)}
+                ) : (
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-primary/5 flex items-center justify-center flex-shrink-0">
+                    <Flame size={24} className="text-primary/20" />
                   </div>
-                </div>
-                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed line-clamp-2 sm:line-clamp-none">
-                  {item.description}
-                </p>
+                )}
 
-                {/* Decorative dots for price connector (visible on larger screens) */}
-                <div className="hidden sm:block absolute bottom-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-serif text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+                          {item.name}
+                        </h3>
+                        {item.tag && (
+                          <span className="text-[9px] uppercase tracking-[0.2em] font-bold bg-primary text-primary-foreground px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm shadow-primary/20">
+                            {item.tag}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="font-serif text-lg sm:text-xl text-primary whitespace-nowrap">
+                      ${formatPrice(item.price)}
+                    </div>
+                  </div>
+
+                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 sm:line-clamp-none text-balance">
+                    {item.description}
+                  </p>
+                </div>
               </div>
-
-              {/* Hover highlight line */}
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-primary group-hover:h-1/2 transition-all duration-500 rounded-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 animate-fade-in">
+            <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center animate-pulse">
+              <ChefHat size={40} className="text-primary/40" />
             </div>
-          ))}
-        </div>
+            <div className="space-y-2">
+              <h3 className="font-serif text-2xl text-foreground">Creando Magia...</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Nuestro chef está preparando nuevas experiencias para esta sección.
+                Vuelve pronto para descubrir sabores inéditos.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Bottom CTA or Decoration */}
         <div className="mt-24 text-center">

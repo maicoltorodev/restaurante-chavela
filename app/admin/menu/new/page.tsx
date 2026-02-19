@@ -25,10 +25,8 @@ export default function NewMenuItemPage() {
     description: '',
     price: '',
     category_id: '',
-    ingredients: '',
     image_url: '',
     tag: '',
-    allergens: [] as string[],
     is_active: true
   })
 
@@ -57,7 +55,6 @@ export default function NewMenuItemPage() {
       const menuItemData = {
         ...formData,
         price: parseFloat(formData.price),
-        ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(Boolean),
         order_index: 0,
         tag: formData.tag || null
       }
@@ -84,7 +81,6 @@ export default function NewMenuItemPage() {
     }
   }
 
-  const allergenOptions = ['gluten', 'lacteos', 'huevo', 'mariscos', 'frutos secos']
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-20">
@@ -207,48 +203,11 @@ export default function NewMenuItemPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#14100f] border-white/5 shadow-2xl rounded-2xl overflow-hidden text-white">
-          <CardHeader className="p-8 border-b border-white/5 bg-black/20 text-white">
-            <CardTitle className="text-xs uppercase tracking-[0.3em] font-bold">Composición y Alérgenos</CardTitle>
+        <Card className="bg-[#14100f] border-white/5 shadow-2xl rounded-2xl overflow-hidden">
+          <CardHeader className="p-8 border-b border-white/5 bg-black/20">
+            <CardTitle className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-bold">Configuración Adicional</CardTitle>
           </CardHeader>
-          <CardContent className="p-8 space-y-8 text-white">
-            <div className="space-y-3">
-              <Label htmlFor="ingredients" className="text-xs uppercase tracking-widest text-muted-foreground font-bold text-white">Ingredientes Clave (separados por comas)</Label>
-              <Textarea
-                id="ingredients"
-                value={formData.ingredients}
-                onChange={(e) => setFormData(prev => ({ ...prev, ingredients: e.target.value }))}
-                rows={2}
-                className="bg-black/20 border-white/5 focus-visible:ring-primary/40 text-white resize-none py-4"
-                placeholder="cerdo, achiote, piña, cilantro, cebolla"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <Label className="text-xs uppercase tracking-widest text-muted-foreground font-bold text-white">Presencia de Alérgenos</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {allergenOptions.map((allergen) => (
-                  <div key={allergen} className="group flex items-center space-x-3 p-3 bg-black/20 border border-white/5 rounded-xl hover:bg-primary/5 hover:border-primary/20 transition-all">
-                    <Checkbox
-                      id={allergen}
-                      checked={formData.allergens.includes(allergen)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setFormData(prev => ({ ...prev, allergens: [...prev.allergens, allergen] }))
-                        } else {
-                          setFormData(prev => ({ ...prev, allergens: prev.allergens.filter(a => a !== allergen) }))
-                        }
-                      }}
-                      className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Label htmlFor={allergen} className="text-xs uppercase tracking-widest font-bold cursor-pointer transition-colors group-hover:text-primary text-white">
-                      {allergen}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+          <CardContent className="p-8 space-y-8">
             <div className="flex items-center space-x-3 p-4 bg-primary/5 border border-primary/20 rounded-2xl">
               <Checkbox
                 id="is_active"

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateMenuItem, deleteMenuItem, getMenuItemById } from '@/lib/supabase/queries'
 import { menuItemSchema } from '@/lib/cms/validations'
+import { revalidateTag } from 'next/cache'
 
 export const runtime = 'edge'
 
@@ -39,6 +40,10 @@ export async function PUT(
     }
 
     const menuItem = await updateMenuItem(id, validation.data)
+
+    // Invalidate cache
+    revalidateTag('menu-items')
+
     return NextResponse.json(menuItem)
   } catch (error) {
     console.error('Error updating menu item:', error)
@@ -56,6 +61,10 @@ export async function DELETE(
   try {
     const { id } = await params
     await deleteMenuItem(id)
+
+    // Invalidate cache
+    revalidateTag('menu-items')
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting menu item:', error)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getRestaurantInfo, updateRestaurantInfo } from '@/lib/supabase/queries'
+import { revalidateTag } from 'next/cache'
 
 export const runtime = 'edge'
 
@@ -20,6 +21,9 @@ export async function POST(request: NextRequest) {
         await Promise.all(
             Object.entries(body).map(([key, value]) => updateRestaurantInfo(key, value))
         )
+
+        // Invalidate cache
+        revalidateTag('restaurant-info')
 
         return NextResponse.json({ success: true })
     } catch (error) {

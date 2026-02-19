@@ -1,8 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { Plus, Search } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
 import { Edit, Trash2, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -12,6 +13,7 @@ import { toast } from 'sonner'
 export function MenuItemsTable() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     fetchMenuItems()
@@ -62,8 +64,16 @@ export function MenuItemsTable() {
     )
   }
 
+
+  // Filter items based on search term
+  const filteredItems = menuItems.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.tag?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   // Group items by category
-  const groupedItems = menuItems.reduce((acc: Record<string, MenuItem[]>, item) => {
+  const groupedItems = filteredItems.reduce((acc: Record<string, MenuItem[]>, item) => {
     const categoryName = item.category?.name || 'Varios'
     if (!acc[categoryName]) {
       acc[categoryName] = []
@@ -76,6 +86,18 @@ export function MenuItemsTable() {
 
   return (
     <div className="overflow-x-auto">
+      <div className="p-6 border-b border-white/5 bg-black/20">
+        <div className="relative group max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por nombre, descripción o etiqueta..."
+            className="pl-10 pr-4 py-2.5 w-full bg-black/40 border border-white/5 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all text-white placeholder:text-muted-foreground/30"
+          />
+        </div>
+      </div>
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-white/5 bg-black/40">
