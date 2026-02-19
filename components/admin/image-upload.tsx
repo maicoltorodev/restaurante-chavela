@@ -15,39 +15,79 @@ interface ImageUploadProps {
 export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
     const [uploading, setUploading] = useState(false)
 
+    const convertToWebP = (file: File): Promise<Blob> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image()
+            img.onload = () => {
+                const canvas = document.createElement('canvas')
+                canvas.width = img.width
+                canvas.height = img.height
+                const ctx = canvas.getContext('2d')
+                if (!ctx) {
+                    reject(new Error('Error de contexto canvas'))
+                    return
+                }
+                ctx.drawImage(img, 0, 0)
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(blob)
+                    else reject(new Error('Error de conversión'))
+                }, 'image/webp', 0.8) // Calidad 80%
+            }
+            img.onerror = (e) => reject(e)
+            img.src = URL.createObjectURL(file)
+        })
+    }
+
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
-            setUploading(true)
             const file = e.target.files?.[0]
             if (!file) return
 
-            // Validar tipo de archivo
+            // 1. Validar Tipo Inicial
             if (!file.type.startsWith('image/')) {
-                toast.error('El archivo debe ser una imagen')
+                toast.error('Solo se permiten imágenes')
                 return
             }
 
-            const fileExt = file.name.split('.').pop()
-            const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
+            setUploading(true)
+            toast.info('Optimizando imagen...', { duration: 2000 })
+
+            // 2. Convertir a WebP y Comprimir
+            const webpBlob = await convertToWebP(file)
+
+            // 3. Validar Tamaño Final (Máx 2MB)
+            const MAX_SIZE = 2 * 1024 * 1024
+            if (webpBlob.size > MAX_SIZE) {
+                toast.error(`La imagen es muy pesada (${(webpBlob.size / 1024 / 1024).toFixed(1)}MB). Intenta reducirla.`)
+                setUploading(false)
+                return
+            }
+
+            // 4. Generar nombre único
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.webp`
             const filePath = `menu/${fileName}`
 
-            // Subir a Supabase Storage
-            const { data, error } = await supabase.storage
-                .from('images') // Asegúrate de tener un bucket llamado 'images'
-                .upload(filePath, file)
+            // 5. Subir a Supabase
+            const { error } = await supabase.storage
+                .from('images')
+                .upload(filePath, webpBlob, {
+                    contentType: 'image/webp',
+                    cacheControl: '3600',
+                    upsert: false
+                })
 
             if (error) throw error
 
-            // Obtener URL pública
+            // 6. Obtener URL
             const { data: { publicUrl } } = supabase.storage
                 .from('images')
                 .getPublicUrl(filePath)
 
             onChange(publicUrl)
-            toast.success('Imagen subida correctamente')
+            toast.success('Imagen procesada y subida')
         } catch (error: any) {
             console.error('Error uploading:', error)
-            toast.error('Error al subir la imagen: ' + (error.message || 'Inténtalo de nuevo'))
+            toast.error('Error al subir: ' + (error.message || 'Inténtalo de nuevo'))
         } finally {
             setUploading(false)
         }
@@ -98,7 +138,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
                                     className="absolute inset-0 opacity-0 cursor-pointer"
                                     onChange={handleUpload}
                                     disabled={uploading}
-                                    accept="image/*"
+                                    accept="image/jpeg,image/png,image/webp"
                                 />
                             </Button>
                             <p className="text-[10px] text-muted-foreground italic">
