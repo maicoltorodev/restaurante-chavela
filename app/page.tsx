@@ -6,19 +6,33 @@ import { AboutSection } from "@/components/about-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
+import { getCategories, getMenuItems, getTestimonials, getRestaurantInfo } from "@/lib/supabase/queries"
 
-export default function Home() {
+export default async function Home() {
+  const [categories, menuItems, testimonials, info] = await Promise.all([
+    getCategories(),
+    getMenuItems(),
+    getTestimonials(),
+    getRestaurantInfo(),
+  ])
+
+  // Convertir array de info a objeto para fácil acceso
+  const restaurantInfo = info.reduce((acc, curr) => ({
+    ...acc,
+    [curr.key]: curr.value
+  }), {} as Record<string, string | null>)
+
   return (
     <main className="overflow-x-hidden">
       <Navbar />
       <Hero />
       <MarqueeBanner />
-      <MenuSection />
+      <MenuSection initialCategories={categories} initialMenuItems={menuItems} />
       <AboutSection />
-      <TestimonialsSection />
+      <TestimonialsSection initialTestimonials={testimonials} />
       <MarqueeBanner />
-      <ContactSection />
-      <Footer />
+      <ContactSection restaurantInfo={restaurantInfo} />
+      <Footer restaurantInfo={restaurantInfo} />
     </main>
   )
 }

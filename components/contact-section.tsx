@@ -1,6 +1,10 @@
 import { MapPin, Clock, Phone, Instagram, Send } from "lucide-react"
 
-export function ContactSection() {
+interface ContactSectionProps {
+  restaurantInfo: Record<string, string | null>
+}
+
+export function ContactSection({ restaurantInfo }: ContactSectionProps) {
   return (
     <section id="contacto" className="py-20 sm:py-32 px-6 relative overflow-hidden bg-background">
       {/* Elementos decorativos de fondo similares a Nosotros */}
@@ -23,7 +27,7 @@ export function ContactSection() {
           <div className="text-center sm:text-right">
             <p className="text-[10px] sm:text-sm text-muted-foreground uppercase tracking-widest mb-4 font-bold">Reserva tu mesa</p>
             <a
-              href="https://wa.me/573000000000"
+              href={restaurantInfo.whatsapp || "https://wa.me/573000000000"}
               target="_blank"
               className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-10 py-5 rounded-2xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 w-full sm:w-auto font-bold uppercase tracking-widest text-xs"
             >
@@ -42,10 +46,8 @@ export function ContactSection() {
                 </div>
                 <div>
                   <h3 className="font-serif text-xl text-foreground mb-2">Ubicación</h3>
-                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                    Calle 124 #15-84<br />
-                    Local BBC, Bogotá<br />
-                    Colombia
+                  <p className="text-muted-foreground leading-relaxed text-sm sm:text-base whitespace-pre-line">
+                    {restaurantInfo.address || "Calle 124 #15-84\nLocal BBC, Bogotá\nColombia"}
                   </p>
                 </div>
               </div>
@@ -59,9 +61,9 @@ export function ContactSection() {
                 <div>
                   <h3 className="font-serif text-xl text-foreground mb-2">Horario</h3>
                   <div className="text-muted-foreground space-y-2 text-sm sm:text-base font-medium">
-                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Lun - Jue:</span> 3:30 PM - 10:00 PM</p>
-                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Vie - Sab:</span> 2:30 PM - 11:00 PM</p>
-                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Dom:</span> 3:30 PM - 10:00 PM</p>
+                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Lun - Jue:</span> {restaurantInfo.hours_week || "3:30 PM - 10:00 PM"}</p>
+                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Vie - Sab:</span> {restaurantInfo.hours_weekend || "2:30 PM - 11:00 PM"}</p>
+                    <p className="flex justify-between gap-4"><span className="text-foreground/70">Dom:</span> {restaurantInfo.hours_sunday || "3:30 PM - 10:00 PM"}</p>
                   </div>
                 </div>
               </div>
@@ -75,8 +77,7 @@ export function ContactSection() {
                 <div>
                   <h3 className="font-serif text-xl text-foreground mb-2">Social</h3>
                   <div className="space-y-1">
-                    <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">@chavela.cocina</a>
-                    <a href="#" className="block text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">@chavela.tacos</a>
+                    <a href={`https://instagram.com/${restaurantInfo.instagram || "chavela.cocina"}`} target="_blank" className="block text-muted-foreground hover:text-primary transition-colors text-sm sm:text-base">@{restaurantInfo.instagram || "chavela.cocina"}</a>
                   </div>
                 </div>
               </div>

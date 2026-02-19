@@ -1,7 +1,13 @@
 import Image from "next/image"
 import { Instagram, Facebook, MessageCircle } from "lucide-react"
 
-export function Footer() {
+interface FooterProps {
+  restaurantInfo: Record<string, string | null>
+}
+
+export function Footer({ restaurantInfo }: FooterProps) {
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer className="bg-card/50 border-t border-border/50 py-20 px-6 relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -17,18 +23,29 @@ export function Footer() {
 
           <h3 className="font-serif text-3xl text-foreground mb-2">Chavela</h3>
           <p className="text-primary text-sm tracking-[0.3em] uppercase mb-10 font-bold">
-            Cocina Mexicana
+            {restaurantInfo.description || "Cocina Mexicana"}
           </p>
 
           {/* Social Links */}
           <div className="flex gap-6 mb-12">
-            <a href="#" className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300">
+            <a
+              href={`https://instagram.com/${restaurantInfo.instagram || "chavela.cocina"}`}
+              target="_blank"
+              className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
+            >
               <Instagram size={20} />
             </a>
-            <a href="#" className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300">
+            <a
+              href="#"
+              className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
+            >
               <Facebook size={20} />
             </a>
-            <a href="https://wa.me/573000000000" className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300">
+            <a
+              href={restaurantInfo.whatsapp || "https://wa.me/573000000000"}
+              target="_blank"
+              className="w-12 h-12 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
+            >
               <MessageCircle size={20} />
             </a>
           </div>
@@ -48,7 +65,7 @@ export function Footer() {
           <div className="w-16 h-px bg-primary/30 mb-8" />
 
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
-            &copy; 2026 Chavela Cocina Mexicana · Bogotá, Usaquén
+            &copy; {currentYear} {restaurantInfo.name || "Chavela Cocina Mexicana"} · Bogotá, Usaquén
           </p>
         </div>
       </div>
