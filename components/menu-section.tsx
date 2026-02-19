@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Flame, Sparkles, ChefHat, ChevronLeft, ChevronRight } from "lucide-react"
 import { Category, MenuItem } from "@/lib/cms/types"
+import { formatPrice } from "@/lib/utils"
 
 interface MenuSectionProps {
   initialCategories: Category[]
@@ -146,7 +147,7 @@ export function MenuSection({ initialCategories, initialMenuItems }: MenuSection
                     )}
                   </div>
                   <div className="font-serif text-xl text-primary whitespace-nowrap group-hover:scale-110 transition-transform origin-right">
-                    ${Number(item.price).toLocaleString('es-CO')}
+                    ${formatPrice(item.price)}
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm sm:text-base leading-relaxed line-clamp-2 sm:line-clamp-none">

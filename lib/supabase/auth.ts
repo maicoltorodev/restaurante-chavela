@@ -25,9 +25,9 @@ export function verifyToken(token: string): { userId: string } | null {
 }
 
 export async function createAdminUser(username: string, password: string) {
-  const supabase = createSupabaseClient()
+  const supabase = await createSupabaseClient()
   const hashedPassword = await hashPassword(password)
-  
+
   const { data, error } = await supabase
     .from('admin_users')
     .insert({
@@ -37,18 +37,18 @@ export async function createAdminUser(username: string, password: string) {
     })
     .select()
     .single()
-    
+
   return { data, error }
 }
 
 export async function getAdminUser(username: string) {
-  const supabase = createSupabaseClient()
-  
+  const supabase = await createSupabaseClient()
+
   const { data, error } = await supabase
     .from('admin_users')
     .select('*')
     .eq('username', username)
     .single()
-    
+
   return { data, error }
 }

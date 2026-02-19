@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
 import './globals.css'
 
-const dmSans = DM_Sans({ 
+const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
 })
 
-const playfair = Playfair_Display({ 
+const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
 })
@@ -39,6 +40,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}>
         {children}
+        <Toaster position="top-center" richColors />
         <Analytics />
       </body>
     </html>

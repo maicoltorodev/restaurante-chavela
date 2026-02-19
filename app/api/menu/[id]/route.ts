@@ -6,10 +6,11 @@ export const runtime = 'edge'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const menuItem = await getMenuItemById(params.id)
+    const { id } = await params
+    const menuItem = await getMenuItemById(id)
     return NextResponse.json(menuItem)
   } catch (error) {
     console.error('Error fetching menu item:', error)
@@ -22,9 +23,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
 
     // Validar parcialmente con Zod
@@ -36,7 +38,7 @@ export async function PUT(
       )
     }
 
-    const menuItem = await updateMenuItem(params.id, validation.data)
+    const menuItem = await updateMenuItem(id, validation.data)
     return NextResponse.json(menuItem)
   } catch (error) {
     console.error('Error updating menu item:', error)
@@ -49,10 +51,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await deleteMenuItem(params.id)
+    const { id } = await params
+    await deleteMenuItem(id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting menu item:', error)

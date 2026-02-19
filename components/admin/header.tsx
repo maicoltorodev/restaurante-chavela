@@ -1,42 +1,42 @@
 "use client"
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Bell, Search } from 'lucide-react'
+import { Search, Menu } from 'lucide-react'
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void
+}
+
+export function Header({ onMenuClick }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="flex items-center justify-between px-6 py-4">
+    <header className="bg-[#14100f]/80 backdrop-blur-md border-b border-white/5 z-20">
+      <div className="flex items-center justify-between px-4 md:px-8 py-4">
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2 -ml-2 text-muted-foreground hover:text-white transition-colors"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+
+          <div className="relative group hidden sm:block">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors" />
             <input
               type="text"
-              placeholder="Buscar..."
+              placeholder="Buscar en el panel..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 bg-black/20 border border-white/5 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all w-64 text-white placeholder:text-muted-foreground/40"
             />
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-          </Button>
-          
-          <div className="flex items-center space-x-3">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Admin</p>
-              <p className="text-xs text-gray-500">taquitosraros</p>
-            </div>
-            <div className="h-8 w-8 bg-orange-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">A</span>
-            </div>
+        <div className="flex items-center space-x-6">
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Chef Privado</span>
+            <span className="text-[8px] uppercase tracking-[0.4em] text-muted-foreground/40">Acceso VIP</span>
           </div>
         </div>
       </div>

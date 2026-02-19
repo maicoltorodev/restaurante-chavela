@@ -1,58 +1,65 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Utensils, Package, MessageSquare, TrendingUp } from 'lucide-react'
+import { Utensils, Package, MessageSquare, TrendingUp, Sparkles } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export function DashboardStats() {
   // Estos datos vendrían de la base de datos
+  // En una implementación real, se usaría un hook para obtener estos valores
   const stats = [
     {
       title: 'Total Platillos',
       value: '24',
-      change: '+2 esta semana',
+      change: '+2 nuevos',
       icon: Utensils,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-500/10'
     },
     {
-      title: 'Categorías',
+      title: 'Secciones',
       value: '4',
-      change: 'Sin cambios',
+      change: 'Arquitectura Carta',
       icon: Package,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/10'
     },
     {
       title: 'Testimonios',
       value: '12',
-      change: '+3 este mes',
+      change: '8 Publicados',
       icon: MessageSquare,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      color: 'text-emerald-400',
+      bgColor: 'bg-emerald-500/10'
     },
     {
-      title: 'Actualizaciones',
-      value: '8',
-      change: 'Hoy',
+      title: 'Actividad',
+      value: 'Hoy',
+      change: '8 cambios',
       icon: TrendingUp,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100'
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/10'
     }
   ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat) => (
-        <Card key={stat.title}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+        <Card key={stat.title} className="bg-[#14100f] border-white/5 rounded-2xl shadow-xl group hover:border-primary/20 transition-all duration-500 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 blur-3xl group-hover:bg-primary/10 transition-colors" />
+
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
               {stat.title}
             </CardTitle>
-            <div className={`p-2 rounded-full ${stat.bgColor}`}>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            <div className={cn("p-2 rounded-xl transition-all duration-300 group-hover:scale-110", stat.bgColor)}>
+              <stat.icon className={cn("h-4 w-4", stat.color)} />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <p className="text-xs text-gray-500">{stat.change}</p>
+            <div className="text-4xl font-serif text-white mb-2">{stat.value}</div>
+            <div className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              <Sparkles className="h-2 w-2 mr-1.5 text-primary/40" />
+              {stat.change}
+            </div>
           </CardContent>
         </Card>
       ))}
