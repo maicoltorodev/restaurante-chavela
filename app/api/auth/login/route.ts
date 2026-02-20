@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUser, verifyPassword, createToken } from '@/lib/supabase/auth'
+import { LRUCache } from 'lru-cache'
+
+// Rate limiter: max 5 intentos por IP cada 15 minutos
+const rateLimit = new LRUCache<string, number>({
+  max: 500,
+  ttl: 1000 * 60 * 15,
+})
 
 export async function POST(request: NextRequest) {
   try {
+    // Obtener IP del cliente
+    const ip = request.headers.get('x-forwarded-for') || 'unknown'
+    const attempts = rateLimit.get(ip) || 0
+
+    if (attempts >= 5) {
+      return NextResponse.json(
+        { error: 'Demasiados intentos. Intenta de nuevo en 15 minutos.' },
+        { status: 429 }
+      )
+    }
+
     const { username, password } = await request.json()
 
     if (!username || !password) {
@@ -15,6 +33,7 @@ export async function POST(request: NextRequest) {
     const { data: user, error } = await getAdminUser(username)
 
     if (error || !user) {
+      rateLimit.set(ip, attempts + 1)
       return NextResponse.json(
         { error: 'Credenciales incorrectas' },
         { status: 401 }
@@ -24,11 +43,15 @@ export async function POST(request: NextRequest) {
     const isValidPassword = await verifyPassword(password, user.password_hash)
 
     if (!isValidPassword) {
+      rateLimit.set(ip, attempts + 1)
       return NextResponse.json(
         { error: 'Credenciales incorrectas' },
         { status: 401 }
       )
     }
+
+    // Reset attempts on successful login
+    rateLimit.delete(ip)
 
     const token = createToken(user.id)
 
