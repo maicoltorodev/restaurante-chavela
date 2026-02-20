@@ -24,6 +24,7 @@ export default async function AdminDashboard() {
         categoriesCount={stats.categoriesCount}
         testimonialsCount={stats.testimonialsCount}
         pendingTestimonialsCount={stats.pendingTestimonialsCount}
+        todayActivityCount={stats.todayActivityCount}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

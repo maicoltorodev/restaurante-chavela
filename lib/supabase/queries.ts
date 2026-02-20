@@ -349,27 +349,49 @@ export async function deleteTestimonial(id: string): Promise<void> {
 export async function getDashboardStats() {
   const supabase = await createSupabaseClient()
 
+  // Rango de hoy (UTC)
+  const todayStart = new Date()
+  todayStart.setUTCHours(0, 0, 0, 0)
+  const todayEnd = new Date()
+  todayEnd.setUTCHours(23, 59, 59, 999)
+
   // Execute queries in parallel for efficiency
   const [
     { count: menuCount },
     { count: activeMenuCount },
     { count: categoriesCount },
     { count: testimonialsCount },
-    { count: pendingTestimonialsCount }
+    { count: pendingTestimonialsCount },
+    { count: menuTodayCount },
+    { count: categoriesTodayCount },
+    { count: testimonialsTodayCount }
   ] = await Promise.all([
     supabase.from('menu_items').select('*', { count: 'exact', head: true }),
     supabase.from('menu_items').select('*', { count: 'exact', head: true }).eq('is_active', true),
     supabase.from('categories').select('*', { count: 'exact', head: true }),
     supabase.from('testimonials').select('*', { count: 'exact', head: true }),
-    supabase.from('testimonials').select('*', { count: 'exact', head: true }).eq('is_approved', false)
+    supabase.from('testimonials').select('*', { count: 'exact', head: true }).eq('is_approved', false),
+    // Actividad de hoy
+    supabase.from('menu_items').select('*', { count: 'exact', head: true })
+      .gte('updated_at', todayStart.toISOString())
+      .lte('updated_at', todayEnd.toISOString()),
+    supabase.from('categories').select('*', { count: 'exact', head: true })
+      .gte('updated_at', todayStart.toISOString())
+      .lte('updated_at', todayEnd.toISOString()),
+    supabase.from('testimonials').select('*', { count: 'exact', head: true })
+      .gte('created_at', todayStart.toISOString())
+      .lte('created_at', todayEnd.toISOString())
   ])
+
+  const todayActivityCount = (menuTodayCount || 0) + (categoriesTodayCount || 0) + (testimonialsTodayCount || 0)
 
   return {
     menuCount: menuCount || 0,
     activeMenuCount: activeMenuCount || 0,
     categoriesCount: categoriesCount || 0,
     testimonialsCount: testimonialsCount || 0,
-    pendingTestimonialsCount: pendingTestimonialsCount || 0
+    pendingTestimonialsCount: pendingTestimonialsCount || 0,
+    todayActivityCount
   }
 }
 

@@ -8,9 +8,10 @@ export interface DashboardStatsProps {
   categoriesCount: number
   testimonialsCount: number
   pendingTestimonialsCount: number
+  todayActivityCount: number
 }
 
-export function DashboardStats({ menuCount, activeMenuCount, categoriesCount, testimonialsCount, pendingTestimonialsCount }: DashboardStatsProps) {
+export function DashboardStats({ menuCount, activeMenuCount, categoriesCount, testimonialsCount, pendingTestimonialsCount, todayActivityCount }: DashboardStatsProps) {
   const stats = [
     {
       title: 'Total Platillos',
@@ -37,9 +38,9 @@ export function DashboardStats({ menuCount, activeMenuCount, categoriesCount, te
       bgColor: 'bg-emerald-500/10'
     },
     {
-      title: 'Actividad',
-      value: 'Hoy',
-      change: 'En tiempo real', // Por ahora dejamos esto estático o podríamos implementar logs
+      title: 'Actividad Hoy',
+      value: todayActivityCount.toString(),
+      change: todayActivityCount === 0 ? 'Sin actividad hoy' : `${todayActivityCount === 1 ? 'cambio realizado' : 'cambios realizados'}`,
       icon: TrendingUp,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10'
