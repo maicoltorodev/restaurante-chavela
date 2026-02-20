@@ -2,21 +2,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Utensils, Package, MessageSquare, TrendingUp, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export function DashboardStats() {
-  // Estos datos vendrían de la base de datos
-  // En una implementación real, se usaría un hook para obtener estos valores
+export interface DashboardStatsProps {
+  menuCount: number
+  activeMenuCount: number
+  categoriesCount: number
+  testimonialsCount: number
+  pendingTestimonialsCount: number
+}
+
+export function DashboardStats({ menuCount, activeMenuCount, categoriesCount, testimonialsCount, pendingTestimonialsCount }: DashboardStatsProps) {
   const stats = [
     {
       title: 'Total Platillos',
-      value: '24',
-      change: '+2 nuevos',
+      value: menuCount.toString(),
+      change: `${activeMenuCount} activos`,
       icon: Utensils,
       color: 'text-orange-400',
       bgColor: 'bg-orange-500/10'
     },
     {
       title: 'Secciones',
-      value: '4',
+      value: categoriesCount.toString(),
       change: 'Arquitectura Carta',
       icon: Package,
       color: 'text-blue-400',
@@ -24,8 +30,8 @@ export function DashboardStats() {
     },
     {
       title: 'Testimonios',
-      value: '12',
-      change: '8 Publicados',
+      value: testimonialsCount.toString(),
+      change: `${pendingTestimonialsCount} pendientes`,
       icon: MessageSquare,
       color: 'text-emerald-400',
       bgColor: 'bg-emerald-500/10'
@@ -33,7 +39,7 @@ export function DashboardStats() {
     {
       title: 'Actividad',
       value: 'Hoy',
-      change: '8 cambios',
+      change: 'En tiempo real', // Por ahora dejamos esto estático o podríamos implementar logs
       icon: TrendingUp,
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10'

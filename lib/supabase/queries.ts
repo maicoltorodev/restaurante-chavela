@@ -345,3 +345,55 @@ export async function deleteTestimonial(id: string): Promise<void> {
 
   if (error) throw error
 }
+
+export async function getDashboardStats() {
+  const supabase = await createSupabaseClient()
+
+  // Execute queries in parallel for efficiency
+  const [
+    { count: menuCount },
+    { count: activeMenuCount },
+    { count: categoriesCount },
+    { count: testimonialsCount },
+    { count: pendingTestimonialsCount }
+  ] = await Promise.all([
+    supabase.from('menu_items').select('*', { count: 'exact', head: true }),
+    supabase.from('menu_items').select('*', { count: 'exact', head: true }).eq('is_active', true),
+    supabase.from('categories').select('*', { count: 'exact', head: true }),
+    supabase.from('testimonials').select('*', { count: 'exact', head: true }),
+    supabase.from('testimonials').select('*', { count: 'exact', head: true }).eq('is_approved', false)
+  ])
+
+  return {
+    menuCount: menuCount || 0,
+    activeMenuCount: activeMenuCount || 0,
+    categoriesCount: categoriesCount || 0,
+    testimonialsCount: testimonialsCount || 0,
+    pendingTestimonialsCount: pendingTestimonialsCount || 0
+  }
+}
+
+export async function getRecentActivity() {
+  const supabase = await createSupabaseClient()
+
+  // Fetch latest 4 items from each main table
+  const [
+    { data: menuItems },
+    { data: categories },
+    { data: testimonials }
+  ] = await Promise.all([
+    supabase.from('menu_items').select('id, name, created_at').order('created_at', { ascending: false }).limit(4),
+    supabase.from('categories').select('id, name, created_at').order('created_at', { ascending: false }).limit(4),
+    supabase.from('testimonials').select('id, customer_name, created_at').order('created_at', { ascending: false }).limit(4)
+  ])
+
+  // Combine and sort
+  const combinedActivity = [
+    ...(menuItems || []).map(item => ({ type: 'menu', ...item, action: 'Nuevo platillo', entity: item.name })),
+    ...(categories || []).map(item => ({ type: 'category', ...item, action: 'Nueva categoría', entity: item.name })),
+    ...(testimonials || []).map(item => ({ type: 'testimonial', ...item, action: 'Nuevo testimonio', entity: item.customer_name }))
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 5) // Keep only top 5
+
+  return combinedActivity
+}

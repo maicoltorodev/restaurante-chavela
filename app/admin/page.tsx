@@ -1,8 +1,14 @@
+import { getDashboardStats, getRecentActivity } from '@/lib/supabase/queries'
 import { DashboardStats } from '@/components/admin/dashboard-stats'
 import { RecentActivity } from '@/components/admin/recent-activity'
 import { Utensils, Package, MessageSquare, TrendingUp, ArrowRight } from 'lucide-react'
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [stats, activities] = await Promise.all([
+    getDashboardStats(),
+    getRecentActivity()
+  ])
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -12,10 +18,16 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <DashboardStats />
+      <DashboardStats
+        menuCount={stats.menuCount}
+        activeMenuCount={stats.activeMenuCount}
+        categoriesCount={stats.categoriesCount}
+        testimonialsCount={stats.testimonialsCount}
+        pendingTestimonialsCount={stats.pendingTestimonialsCount}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <RecentActivity />
+        <RecentActivity activities={activities} />
         <div className="bg-[#14100f] rounded-2xl border border-white/5 p-8 shadow-xl">
           <div className="flex items-center space-x-3 mb-8">
             <div className="p-2 bg-primary/10 rounded-lg">
