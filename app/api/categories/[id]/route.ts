@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateCategory, deleteCategory, getCategoryById } from '@/lib/supabase/queries'
+import { updateCategory, deleteCategory, getCategoryById, getAdminCategoryById } from '@/lib/supabase/queries'
 import { categorySchema } from '@/lib/cms/validations'
 import { revalidateTag } from 'next/cache'
 
@@ -11,7 +11,7 @@ export async function GET(
 ) {
     try {
         const { id } = await params
-        const category = await getCategoryById(id)
+        const category = await getAdminCategoryById(id)
         return NextResponse.json(category)
     } catch (error) {
         console.error('Error fetching category:', error)

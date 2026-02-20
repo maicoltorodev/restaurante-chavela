@@ -2,6 +2,7 @@ import { createSupabaseClient, createPublicClient } from './server'
 import { Category, MenuItem, RestaurantInfo, Testimonial } from '../cms/types'
 import { unstable_cache } from 'next/cache'
 
+// ... existing code ...
 export const getCategories = unstable_cache(
   async (): Promise<Category[]> => {
     const supabase = createPublicClient()
@@ -18,6 +19,18 @@ export const getCategories = unstable_cache(
   { tags: ['categories'] }
 )
 
+export async function getAdminCategories(): Promise<Category[]> {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .order('order_index', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+// ... existing code ...
 export const getMenuItems = unstable_cache(
   async (): Promise<MenuItem[]> => {
     const supabase = createPublicClient()
@@ -36,6 +49,20 @@ export const getMenuItems = unstable_cache(
   ['menu-items'],
   { tags: ['menu-items'] }
 )
+
+export async function getAdminMenuItems(): Promise<MenuItem[]> {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select(`
+      *,
+      category:categories(*)
+    `)
+    .order('order_index', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
 
 export async function getMenuItemsByCategory(categoryId: string): Promise<MenuItem[]> {
   const supabase = createPublicClient()
@@ -128,6 +155,18 @@ export async function getCategoryById(id: string): Promise<Category> {
   return data
 }
 
+export async function getAdminCategoryById(id: string): Promise<Category> {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
 export async function deleteCategory(id: string): Promise<void> {
   const supabase = await createSupabaseClient()
   const { error } = await supabase
@@ -178,6 +217,22 @@ export async function getMenuItemById(id: string): Promise<MenuItem> {
   return data
 }
 
+export async function getAdminMenuItemById(id: string): Promise<MenuItem> {
+  const supabase = await createSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select(`
+      *,
+      category:categories(*)
+    `)
+    .eq('id', id)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
 export const getApprovedTestimonials = unstable_cache(
   async (): Promise<Testimonial[]> => {
     const supabase = createPublicClient()
@@ -195,27 +250,17 @@ export const getApprovedTestimonials = unstable_cache(
   { tags: ['testimonials'] }
 )
 
-export const getAdminTestimonials = unstable_cache(
-  async (): Promise<Testimonial[]> => {
-    const supabase = createPublicClient() // Usamos cliente público porque RLS maneja acceso, pero para admin idealmente service role si RLS bloquea
-    // Nota: Como es server component seguro, podríamos usar createSupabaseClient para asegurar auth, 
-    // pero unstable_cache y cookies a veces pelean. Por ahora público con RLS o service role si necesario.
-    // Dado que unstable_cache no recibe cookies, mejor usamos query directa en la página admin o aceptamos caché público.
-    // Para simplificar y dado que 'unstable_cache' cachea para todos, mejor NO cachear la vista de admin o usar tag distinta.
-    // Vamos a hacer fetch directo en admin page, aquí solo exportamos la función sin caché o con tag de admin.
+export async function getAdminTestimonials(): Promise<Testimonial[]> {
+  const supabase = await createSupabaseClient() // Cliente autenticado para ver todo
 
-    // Mejor estrategia: No usar unstable_cache para admin panel para ver datos frescos siempre.
-    const { data, error } = await supabase
-      .from('testimonials')
-      .select('*')
-      .order('created_at', { ascending: false })
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .order('created_at', { ascending: false })
 
-    if (error) throw error
-    return data || []
-  },
-  ['testimonials-admin'],
-  { tags: ['testimonials'] }
-)
+  if (error) throw error
+  return data || []
+}
 
 export async function createTestimonial(testimonial: Pick<Testimonial, 'customer_name' | 'rating' | 'comment'>): Promise<void> {
   const supabase = createPublicClient() // Cliente público para envíos desde la web

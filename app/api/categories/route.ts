@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCategories, createCategory } from '@/lib/supabase/queries'
+import { getCategories, createCategory, getAdminCategories } from '@/lib/supabase/queries'
 import { categorySchema } from '@/lib/cms/validations'
 
 import { revalidateTag } from 'next/cache'
@@ -8,7 +8,7 @@ export const runtime = 'edge'
 
 export async function GET() {
   try {
-    const categories = await getCategories()
+    const categories = await getAdminCategories()
     return NextResponse.json(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)

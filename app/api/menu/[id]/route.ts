@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateMenuItem, deleteMenuItem, getMenuItemById } from '@/lib/supabase/queries'
+import { updateMenuItem, deleteMenuItem, getMenuItemById, getAdminMenuItemById } from '@/lib/supabase/queries'
 import { menuItemSchema } from '@/lib/cms/validations'
 import { revalidateTag } from 'next/cache'
 
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const menuItem = await getMenuItemById(id)
+    const menuItem = await getAdminMenuItemById(id)
     return NextResponse.json(menuItem)
   } catch (error) {
     console.error('Error fetching menu item:', error)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { getMenuItemById, getCategories } from '@/lib/supabase/queries'
+import { getAdminMenuItemById, getAdminCategories } from '@/lib/supabase/queries'
 import EditMenuItemForm from './edit-menu-item-form'
 import { notFound } from 'next/navigation'
 
@@ -8,8 +8,8 @@ export default async function EditMenuItemPage({ params }: { params: Promise<{ i
 
     try {
         const [menuItem, categories] = await Promise.all([
-            getMenuItemById(id),
-            getCategories()
+            getAdminMenuItemById(id),
+            getAdminCategories()
         ])
 
         if (!menuItem) {

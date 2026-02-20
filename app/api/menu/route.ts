@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMenuItems, createMenuItem } from '@/lib/supabase/queries'
+import { getMenuItems, createMenuItem, getAdminMenuItems } from '@/lib/supabase/queries'
 import { menuItemSchema } from '@/lib/cms/validations'
 import { revalidateTag } from 'next/cache'
 
@@ -7,7 +7,7 @@ export const runtime = 'edge'
 
 export async function GET() {
   try {
-    const menuItems = await getMenuItems()
+    const menuItems = await getAdminMenuItems()
     return NextResponse.json(menuItems)
   } catch (error) {
     console.error('Error fetching menu items:', error)
