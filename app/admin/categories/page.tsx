@@ -22,7 +22,11 @@ export default function CategoriesPage() {
         try {
             const response = await fetch('/api/categories')
             const data = await response.json()
-            if (response.ok) setCategories(data)
+            if (response.ok) {
+                // Ordenar por índice de menor a mayor
+                const sortedData = data.sort((a: Category, b: Category) => a.order_index - b.order_index)
+                setCategories(sortedData)
+            }
         } catch (error) {
             toast.error('Error al cargar categorías')
         } finally {

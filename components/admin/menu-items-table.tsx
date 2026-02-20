@@ -25,7 +25,17 @@ export function MenuItemsTable() {
       const data = await response.json()
 
       if (response.ok) {
-        setMenuItems(data)
+        // Ordenar primero por índice de categoría, luego por índice de ítem
+        const sortedData = data.sort((a: MenuItem, b: MenuItem) => {
+          const categoryOrderA = a.category?.order_index || 0
+          const categoryOrderB = b.category?.order_index || 0
+
+          if (categoryOrderA !== categoryOrderB) {
+            return categoryOrderA - categoryOrderB
+          }
+          return a.order_index - b.order_index
+        })
+        setMenuItems(sortedData)
       } else {
         toast.error('Error al cargar los platillos')
       }
@@ -72,17 +82,22 @@ export function MenuItemsTable() {
     item.tag?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Group items by category
-  const groupedItems = filteredItems.reduce((acc: Record<string, MenuItem[]>, item) => {
+  // Group items by category with metadata for sorting
+  const groupedItems = filteredItems.reduce((acc: Record<string, { items: MenuItem[], order: number }>, item) => {
     const categoryName = item.category?.name || 'Varios'
+    const categoryOrder = item.category?.order_index || 9999
+
     if (!acc[categoryName]) {
-      acc[categoryName] = []
+      acc[categoryName] = { items: [], order: categoryOrder }
     }
-    acc[categoryName].push(item)
+    acc[categoryName].items.push(item)
     return acc
   }, {})
 
-  const categories = Object.keys(groupedItems).sort((a, b) => a.localeCompare(b))
+  // Sort categories by their order index
+  const sortedCategories = Object.entries(groupedItems)
+    .sort(([, a], [, b]) => a.order - b.order)
+    .map(([name, data]) => ({ name, items: data.items }))
 
   return (
     <div className="overflow-x-auto">
@@ -108,24 +123,24 @@ export function MenuItemsTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-white/5">
-          {categories.map((category) => (
-            <React.Fragment key={category}>
+          {sortedCategories.map(({ name, items }) => (
+            <React.Fragment key={name}>
               {/* Category Header Row */}
               <tr className="bg-primary/5">
                 <td colSpan={4} className="px-8 py-3">
                   <div className="flex items-center gap-3">
                     <span className="h-px w-8 bg-primary/30"></span>
                     <span className="text-[11px] font-bold text-primary uppercase tracking-[0.4em]">
-                      {category}
+                      {name}
                     </span>
                     <Badge className="bg-primary/10 text-primary border-none text-[9px] h-5 min-w-[20px] justify-center px-1">
-                      {groupedItems[category].length}
+                      {items.length}
                     </Badge>
                     <span className="h-px flex-1 bg-white/5"></span>
                   </div>
                 </td>
               </tr>
-              {groupedItems[category].map((item) => (
+              {items.map((item) => (
                 <tr key={item.id} className="group hover:bg-white/[0.02] transition-colors translate-z-0">
                   <td className="px-8 py-6 whitespace-nowrap">
                     <div className="flex items-center">
