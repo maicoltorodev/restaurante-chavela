@@ -229,45 +229,55 @@ export function TestimonialsSection({ initialTestimonials }: TestimonialsSection
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                    {initialTestimonials.map((testi, i) => (
-                        <div
-                            key={testi.id}
-                            className="group bg-background border border-border/50 p-7 sm:p-10 rounded-3xl hover:border-primary/40 transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] relative flex flex-col justify-between"
-                        >
-                            <div className="absolute top-7 sm:top-8 right-8 sm:right-10 text-primary opacity-5 group-hover:opacity-20 transition-opacity">
-                                <Quote size={40} className="sm:size-12" />
-                            </div>
-
-                            <div>
-                                <div className="flex gap-1 mb-6">
-                                    {[...Array(testi.rating)].map((_, i) => (
-                                        <Star key={i} className="text-primary fill-primary" size={12} />
-                                    ))}
+                {initialTestimonials.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                        {initialTestimonials.map((testi, i) => (
+                            <div
+                                key={testi.id}
+                                className="group bg-background border border-border/50 p-7 sm:p-10 rounded-3xl hover:border-primary/40 transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] relative flex flex-col justify-between"
+                            >
+                                <div className="absolute top-7 sm:top-8 right-8 sm:right-10 text-primary opacity-5 group-hover:opacity-20 transition-opacity">
+                                    <Quote size={40} className="sm:size-12" />
                                 </div>
 
-                                <p className="text-muted-foreground text-base sm:text-lg italic mb-8 leading-relaxed">
-                                    "{testi.comment}"
-                                </p>
-                            </div>
-
-                            <div className="flex items-center gap-4 pt-6 border-t border-border/50">
-                                <div className="relative shrink-0">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-serif text-xl font-bold border border-primary/10">
-                                        {testi.customer_name.charAt(0)}
+                                <div>
+                                    <div className="flex gap-1 mb-6">
+                                        {[...Array(testi.rating)].map((_, i) => (
+                                            <Star key={i} className="text-primary fill-primary" size={12} />
+                                        ))}
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background border-2 border-primary rounded-full flex items-center justify-center font-bold text-[8px] text-primary shadow-lg">
-                                        ✓
+
+                                    <p className="text-muted-foreground text-base sm:text-lg italic mb-8 leading-relaxed">
+                                        "{testi.comment}"
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-4 pt-6 border-t border-border/50">
+                                    <div className="relative shrink-0">
+                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-serif text-xl font-bold border border-primary/10">
+                                            {testi.customer_name.charAt(0)}
+                                        </div>
+                                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background border-2 border-primary rounded-full flex items-center justify-center font-bold text-[8px] text-primary shadow-lg">
+                                            ✓
+                                        </div>
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="font-serif text-foreground text-lg leading-tight mb-1 truncate">{testi.customer_name}</p>
+                                        <p className="text-[10px] uppercase tracking-[0.2em] text-primary/70 font-bold">Cliente</p>
                                     </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="font-serif text-foreground text-lg leading-tight mb-1 truncate">{testi.customer_name}</p>
-                                    <p className="text-[10px] uppercase tracking-[0.2em] text-primary/70 font-bold">Cliente</p>
-                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-dashed border-white/10 rounded-3xl bg-white/5 max-w-3xl mx-auto">
+                        <Quote className="h-16 w-16 text-primary/20 mb-6" />
+                        <h3 className="text-2xl sm:text-3xl font-serif text-white mb-3">Tu voz nos importa</h3>
+                        <p className="text-muted-foreground text-lg max-w-md mx-auto leading-relaxed italic">
+                            "Actualmente no tenemos testimonios, ¡déjanos uno con el botón de aquí arriba!"
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     )
