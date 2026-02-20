@@ -6,13 +6,13 @@ import { AboutSection } from "@/components/about-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
-import { getCategories, getMenuItems, getTestimonials, getRestaurantInfo } from "@/lib/supabase/queries"
+import { getCategories, getMenuItems, getApprovedTestimonials, getRestaurantInfo } from "@/lib/supabase/queries"
 
 export default async function Home() {
   const [categories, menuItems, testimonials, info] = await Promise.all([
     getCategories(),
     getMenuItems(),
-    getTestimonials(),
+    getApprovedTestimonials(),
     getRestaurantInfo(),
   ])
 

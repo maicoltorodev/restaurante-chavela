@@ -96,9 +96,29 @@ export default function TestimonialsList({ initialTestimonials }: TestimonialsLi
                                         "{testi.comment}"
                                     </p>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-bold">
-                                    <span>Fecha de envío:</span>
-                                    <span className="text-muted-foreground/60">{new Date(testi.created_at).toLocaleDateString()}</span>
+                                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] text-muted-foreground/40 uppercase tracking-[0.2em] font-bold">
+                                    <div className="flex items-center gap-2">
+                                        <span>Fecha:</span>
+                                        <span className="text-muted-foreground/60">{new Date(testi.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    {!testi.is_approved && (
+                                        <div className="flex items-center gap-2 text-orange-500/80 bg-orange-500/5 px-2 py-1 rounded">
+                                            <span>Expira en:</span>
+                                            <span>
+                                                {(() => {
+                                                    const created = new Date(testi.created_at)
+                                                    const expireDate = new Date(created)
+                                                    expireDate.setDate(expireDate.getDate() + 7)
+                                                    const now = new Date()
+                                                    const diffTime = expireDate.getTime() - now.getTime()
+                                                    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+                                                    if (daysLeft <= 0) return 'Hoy'
+                                                    return `${daysLeft} día${daysLeft !== 1 ? 's' : ''}`
+                                                })()}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex gap-2 self-end md:self-start">

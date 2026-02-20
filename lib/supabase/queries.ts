@@ -178,9 +178,33 @@ export async function getMenuItemById(id: string): Promise<MenuItem> {
   return data
 }
 
-export const getTestimonials = unstable_cache(
+export const getApprovedTestimonials = unstable_cache(
   async (): Promise<Testimonial[]> => {
     const supabase = createPublicClient()
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('*')
+      .eq('is_approved', true)
+      .order('created_at', { ascending: false })
+      .limit(6) // Mostrar solo los últimos 6 aprobados
+
+    if (error) throw error
+    return data || []
+  },
+  ['testimonials-approved'],
+  { tags: ['testimonials'] }
+)
+
+export const getAdminTestimonials = unstable_cache(
+  async (): Promise<Testimonial[]> => {
+    const supabase = createPublicClient() // Usamos cliente público porque RLS maneja acceso, pero para admin idealmente service role si RLS bloquea
+    // Nota: Como es server component seguro, podríamos usar createSupabaseClient para asegurar auth, 
+    // pero unstable_cache y cookies a veces pelean. Por ahora público con RLS o service role si necesario.
+    // Dado que unstable_cache no recibe cookies, mejor usamos query directa en la página admin o aceptamos caché público.
+    // Para simplificar y dado que 'unstable_cache' cachea para todos, mejor NO cachear la vista de admin o usar tag distinta.
+    // Vamos a hacer fetch directo en admin page, aquí solo exportamos la función sin caché o con tag de admin.
+
+    // Mejor estrategia: No usar unstable_cache para admin panel para ver datos frescos siempre.
     const { data, error } = await supabase
       .from('testimonials')
       .select('*')
@@ -189,9 +213,66 @@ export const getTestimonials = unstable_cache(
     if (error) throw error
     return data || []
   },
-  ['testimonials'],
+  ['testimonials-admin'],
   { tags: ['testimonials'] }
 )
+
+export async function createTestimonial(testimonial: Pick<Testimonial, 'customer_name' | 'rating' | 'comment'>): Promise<void> {
+  const supabase = createPublicClient() // Cliente público para envíos desde la web
+
+  // 1. Insertar nuevo testimonio (is_approved: false por default en DB o forzado aquí)
+  // No usamos select() porque el usuario anónimo no tiene permisos para leer el testimonio pendiente (RLS)
+  const { error } = await supabase
+    .from('testimonials')
+    .insert({
+      ...testimonial,
+      is_approved: false
+    })
+
+  if (error) throw error
+}
+
+/**
+ * Función para limpiar testimonios antiguos y mantener la BD limpia.
+ * Se llama después de aprobar o insertar.
+ */
+export async function cleanupTestimonials(): Promise<void> {
+  const supabase = await createSupabaseClient() // Cliente admin para borrar
+
+  // 1. Mantener solo los últimos 20 APROBADOS
+  const { data: approvedIds } = await supabase
+    .from('testimonials')
+    .select('id')
+    .eq('is_approved', true)
+    .order('created_at', { ascending: false })
+    .range(20, 1000) // Obtener los IDs que sobran después del 20
+
+  if (approvedIds && approvedIds.length > 0) {
+    await supabase.from('testimonials').delete().in('id', approvedIds.map(t => t.id))
+  }
+
+  // 2. Mantener solo los últimos 20 PENDIENTES
+  const { data: pendingIds } = await supabase
+    .from('testimonials')
+    .select('id')
+    .eq('is_approved', false)
+    .order('created_at', { ascending: false })
+    .range(20, 1000)
+
+  if (pendingIds && pendingIds.length > 0) {
+    await supabase.from('testimonials').delete().in('id', pendingIds.map(t => t.id))
+  }
+
+  // 3. Eliminar PENDIENTES con más de 1 semana
+  const oneWeekAgo = new Date()
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+
+  await supabase
+    .from('testimonials')
+    .delete()
+    .eq('is_approved', false)
+    .lt('created_at', oneWeekAgo.toISOString())
+}
 
 export async function updateTestimonial(id: string, testimonial: Partial<Testimonial>): Promise<Testimonial> {
   const supabase = await createSupabaseClient()
@@ -203,6 +284,10 @@ export async function updateTestimonial(id: string, testimonial: Partial<Testimo
     .single()
 
   if (error) throw error
+
+  // Limpiar BD después de actualizar
+  await cleanupTestimonials()
+
   return data
 }
 

@@ -1,9 +1,9 @@
 import React from 'react'
-import { getTestimonials } from '@/lib/supabase/queries'
+import { getAdminTestimonials } from '@/lib/supabase/queries'
 import TestimonialsList from './testimonials-list'
 
 export default async function TestimonialsAdminPage() {
-    const testimonials = await getTestimonials()
+    const testimonials = await getAdminTestimonials()
 
     return (
         <div className="space-y-8">
